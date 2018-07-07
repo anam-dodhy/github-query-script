@@ -13,6 +13,8 @@ MONTH='12'
 DAY='01'
 YEAR=2016
 BASE_QUERY='in:file language:java stars:>100'
+SORT='stars'
+ORDER='desc'
 
 def filter_private_repos(repository_search_res):
 	'''
@@ -43,9 +45,7 @@ def run():
 		next_year = year + 1
 		query += ' created:"' + str(year) + '-' + MONTH + '-' + DAY + ' .. ' + str(year + 1) + '-' + MONTH + '-' + DAY + '"'
 		print query
-		sort = 'stars'
-		order = 'desc'
-		query_results = filter(filter_private_repos, github.search_repositories(query,sort,order)) # returns Repository
+		query_results = filter(filter_private_repos, github.search_repositories(query,SORT,ORDER)) # returns Repository sorted by stars in desc order
 	   	repo_info = map(get_repo_info, query_results)
 	   	print 'got: ', len(repo_info)
 	   	#repositories |= set(repo_info) #this is disturbing the sort order of the repositories returned

@@ -28,13 +28,12 @@ class CodeSearch:
 		'''
 		Read list of repositories whose code will be queried
 		'''
-		repositories = set()
+		repositories = [] #set() is destroying the order of the elements from the file
 		with open(self.repo_file, 'r') as input_file:
 			for repo_name in input_file:
 				name,commit_url = repo_name.split("---") #each item in repositories.txt file is "repo_name---lastcommitURL"
-				repositories.add(name.rstrip('\n'))
+				repositories.append(name.rstrip('\n'))
 			input_file.close()
-
 		self.repositories = list(repositories)
 
 	def write_code_results(self, code_results):
