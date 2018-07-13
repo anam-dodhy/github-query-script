@@ -31,34 +31,45 @@ class CodeSearch:
 		repositories = [] #set() is destroying the order of the elements from the file
 		with open(self.repo_file, 'r') as input_file:
 			for repo_name in input_file:
-				name,commit_url = repo_name.split("---") #each item in repositories.txt file is "repo_name---lastcommitURL"
-				repositories.append(name.rstrip('\n'))
+				index,name,commit_count,commit_url = repo_name.split("---") #each item in repositories.txt file is "repo_name---lastcommitURL"
+				repo_info = {"index": index,
+				"name": name.rstrip('\n'),
+				"commit_count": commit_count,
+				"commit_url": commit_url }
+				#repositories.append(name.rstrip('\n'))
+				repositories.append(repo_info)
 			input_file.close()
 		self.repositories = list(repositories)
 
-	def write_code_results(self, code_results):
+	def write_code_results(self, code_results, repos_to_query):
 		'''
 		Given the results of the code search, write each repository and the
 		matching file url to a csv file
 		'''
-		try:
-			for code_result in code_results:
-				self.writer.writerow({'repository' : code_result.repository,
-					'file_url' : code_result.html_url})
-		except ServerError:
-		  	print "Failed"
-		except ForbiddenError:
-			print "Exceeded limit"
+		for code_result in code_results:
+			commit_count=0
+			commit_url=''
+			index=0
+			for repo in repos_to_query:
+				if str(repo["name"]) == str(code_result.repository):
+					commit_count = repo["commit_count"]
+					index = repo["index"]
+					commit_url = repo["commit_url"]
 
+			self.writer.writerow({'index' : index,
+			'repository' : code_result.repository,
+				'file_url' : code_result.html_url,
+				'commit_count' : commit_count,
+				'commit_url' : commit_url})
+				
 	def search_code_in_repos(self, repos):
 		'''
 		Appends a list of given repos to the base_query
 		and uses the Github search API to search those repos
 		'''
 		query = self.base_query
-
 		for repo in repos:
-			query += " repo:" + repo
+			query += " repo:" + repo["name"]
 
 		return self.github.search_code(query)
 
@@ -70,7 +81,7 @@ class CodeSearch:
 		'''
 		repos_to_query = self.repositories[start_index:end_index]
 		code_results = self.search_code_in_repos(repos_to_query)
-		self.write_code_results(code_results)
+		self.write_code_results(code_results, repos_to_query)
 
 
 	def create_csv_file(self):
@@ -78,7 +89,7 @@ class CodeSearch:
 		Creates the csv file and its header
 		'''
 		csvfile = open(self.output_file, 'w')
-		fieldnames = ['repository', 'file_url']
+		fieldnames = ['index','repository', 'file_url','commit_count','commit_url']
 		self.writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
 		self.writer.writeheader()
 
