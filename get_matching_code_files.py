@@ -31,7 +31,7 @@ class CodeSearch:
 		repositories = [] #set() is destroying the order of the elements from the file
 		with open(self.repo_file, 'r') as input_file:
 			for repo_name in input_file:
-				index,name,commit_count,commit_url = repo_name.split("---") #each item in repositories.txt file is "repo_name---lastcommitURL"
+				index,name,commit_count,commit_url = repo_name.split(";") #each item in repositories.txt file is "repo_name;lastcommitURL"
 				repo_info = {"index": index,
 				"name": name.rstrip('\n'),
 				"commit_count": commit_count,
@@ -61,7 +61,7 @@ class CodeSearch:
 				'file_url' : code_result.html_url,
 				'commit_count' : commit_count,
 				'commit_url' : commit_url})
-				
+
 	def search_code_in_repos(self, repos):
 		'''
 		Appends a list of given repos to the base_query
@@ -70,7 +70,8 @@ class CodeSearch:
 		query = self.base_query
 		for repo in repos:
 			query += " repo:" + repo["name"]
-
+		
+		print(query)
 		return self.github.search_code(query)
 
 	def search_code(self, start_index, end_index):
