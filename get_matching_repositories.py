@@ -77,7 +77,7 @@ def get_multiple_year_data(base_query, start_year, start_month, day, end_month, 
 	return repo_infos
 
 def run():
-	github = login('a-dodhy', password = 'germany78645tkxel') #anam-dodhy,password=germany78645tkxel #getpass.getpass()
+	github = login('abc', password = getpass.getpass())
 
 	repo_infos = get_single_year_data(BASE_QUERY, YEAR, START_MONTH, DAY, END_MONTH, SORT, ORDER, github)
 	#repo_infos = get_multiple_year_data(BASE_QUERY, YEAR, START_MONTH, DAY, END_MONTH, SORT, ORDER)

@@ -17,7 +17,7 @@ QUERY_SIZE = 40
 class CodeSearch:
 
 	def __init__(self, username, repo_file, output_file):
-		self.github = login(username, password = 'germany78645tkxel') #getpass.getpass()
+		self.github = login(username, password = getpass.getpass())
 		self.base_query = '"javax.crypto" language:java'
 		self.repositories = []
 		self.writer = None
